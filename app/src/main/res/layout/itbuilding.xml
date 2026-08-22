@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/buildingName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="I'm the fucking map"
+            android:textColor="#000000"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <!-- Everything that should zoom in/out lives inside this container. -->
+        <RelativeLayout
+            android:id="@+id/mapContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/buildingName"
+            android:clipChildren="false">
+
+            <Button
+                android:id="@+id/btn_1b_block"
+                android:layout_width="110dp"
+                android:layout_height="116dp"
+                android:layout_above="@+id/btn_2a_block"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="500dp"
+                android:background="@drawable/building"
+                android:text="1B"
+                android:textColor="#F2F4F7"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+
+            <Button
+                android:id="@+id/btn_1a_block"
+                android:layout_width="110dp"
+                android:layout_height="59dp"
+                android:layout_alignEnd="@+id/btn_1b_block"
+                android:layout_marginTop="50dp"
+                android:layout_marginEnd="-231dp"
+                android:background="@drawable/building"
+                android:text="1A"
+                android:textColor="#F2F4F7"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_2a_block"
+                android:layout_width="114dp"
+                android:layout_height="61dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="28dp"
+                android:layout_toStartOf="@+id/btn_2b_block"
+                android:background="@drawable/building"
+                android:text="2A"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_2b_block"
+                android:layout_width="114dp"
+                android:layout_height="61dp"
+                android:layout_alignEnd="@+id/btn_1b_block"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="-160dp"
+                android:layout_marginBottom="29dp"
+                android:background="@drawable/building"
+                android:text="2B"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_4_block"
+                android:layout_width="71dp"
+                android:layout_height="116dp"
+                android:layout_alignEnd="@+id/btn_1a_block"
+                android:layout_marginTop="110dp"
+                android:layout_marginEnd="-1dp"
+                android:background="@drawable/building"
+                android:text="Comp Lab"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_3_block"
+                android:layout_width="71dp"
+                android:layout_height="116dp"
+                android:layout_alignEnd="@+id/btn_1a_block"
+                android:layout_marginTop="220dp"
+                android:layout_marginEnd="0dp"
+                android:background="@drawable/building"
+                android:text="Internet Room"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+
+            <Button
+                android:id="@+id/btn_faculty_block"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/btn_1b_block"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="-229dp"
+                android:layout_marginBottom="26dp"
+                android:background="@drawable/building"
+                android:text="Faculty"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <!-- The slider is a self-contained layer. Added an ID so View Binding can find it cleanly. -->
+    <include
+        android:id="@+id/slider_root"
+        layout="@layout/slider" />
+
+</FrameLayout>
