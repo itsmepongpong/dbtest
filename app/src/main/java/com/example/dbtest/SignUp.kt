@@ -57,7 +57,7 @@ class SignUpActivity : AppCompatActivity() {
             if (password.length < 6) { tilPassword.error = "Minimum 6 characters"; return@setOnClickListener }
 
             lifecycleScope.launch {
-                val newUser = User(name = name, username = username, password = password)
+                val newUser = User(fullName = name, username = username, password = password)
                 database.userDao().insertUser(newUser)
 
                 Toast.makeText(this@SignUpActivity, "Account Created!", Toast.LENGTH_SHORT).show()

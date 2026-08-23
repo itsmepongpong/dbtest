@@ -1,39 +1,81 @@
 package com.example.dbtest.fragments.list
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.dbtest.LoginActivity
 import com.example.dbtest.R
+import com.example.dbtest.data.User
+import com.example.dbtest.data.UserViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ListFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ListFragment : Fragment() {
+
+    private lateinit var mUserViewModel: UserViewModel
+    private lateinit var adapter: UserAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_list, container, false)
 
+        mUserViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+
+        val recyclerView = view.findViewById<RecyclerView>(R.id.RecylerView)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        adapter = UserAdapter(
+            onEditClick = { user -> openEditScreen(user) },
+            onDeleteClick = { user -> confirmDelete(user) }
+        )
+        recyclerView.adapter = adapter
+
+        mUserViewModel.allUsers.observe(viewLifecycleOwner) { users ->
+            adapter.submitList(users)
+        }
+
         val fab = view.findViewById<FloatingActionButton>(R.id.floatingActionButton)
-        fab.setOnClickListener{
+        fab.setOnClickListener {
             findNavController().navigate(R.id.action_listFragment_to_addFragment)
+        }
+
+        val btnBack = view.findViewById<ImageButton>(R.id.btnBack)
+        btnBack.setOnClickListener {
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            requireActivity().finish()
         }
 
         return view
     }
 
+    private fun openEditScreen(user: User) {
+        val bundle = Bundle().apply {
+            putLong("userId", user.id)
+            putString("fullName", user.fullName)
+            putString("username", user.username)
+            putString("password", user.password)
+        }
+        findNavController().navigate(R.id.action_listFragment_to_addFragment, bundle)
+    }
+
+    private fun confirmDelete(user: User) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete user")
+            .setMessage("Delete ${user.fullName}?")
+            .setPositiveButton("Delete") { _, _ -> mUserViewModel.deleteUser(user) }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
 }

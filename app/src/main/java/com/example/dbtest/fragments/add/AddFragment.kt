@@ -1,6 +1,5 @@
 package com.example.dbtest.fragments.add
 
-import android.R.attr.text
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
@@ -20,6 +19,7 @@ class AddFragment : Fragment() {
 
     private lateinit var mUserViewModel: UserViewModel
     private lateinit var rootView: View
+    private var editingUserId: Long = -1L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,28 +30,49 @@ class AddFragment : Fragment() {
 
         mUserViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
 
-        val fab = view.findViewById<Button>(R.id.addbutton)
-        fab.setOnClickListener {
-            insertDataToDatabase()
+        val etFullName = view.findViewById<EditText>(R.id.FullName)
+        val etUsername = view.findViewById<EditText>(R.id.UserName)
+        val etPassword = view.findViewById<EditText>(R.id.Password)
+        val btnSave = view.findViewById<Button>(R.id.addbutton)
+
+        editingUserId = arguments?.getLong("userId", -1L) ?: -1L
+        if (editingUserId != -1L) {
+            etFullName.setText(arguments?.getString("fullName"))
+            etUsername.setText(arguments?.getString("username"))
+            etPassword.setText(arguments?.getString("password"))
+            btnSave.text = "Update"
+        }
+
+        btnSave.setOnClickListener {
+            saveUser()
         }
         return view
     }
 
-    private fun insertDataToDatabase() {
-        val fullName = rootView.findViewById<EditText>(R.id.FullName).text.toString()
-        val username = rootView.findViewById<EditText>(R.id.UserName).text.toString()
-        val password = rootView.findViewById<EditText>(R.id.Password).text.toString()
+    private fun saveUser() {
+        val fullName = rootView.findViewById<EditText>(R.id.FullName).text.toString().trim()
+        val username = rootView.findViewById<EditText>(R.id.UserName).text.toString().trim()
+        val password = rootView.findViewById<EditText>(R.id.Password).text.toString().trim()
 
-        if(inputCheck(username, fullName, password)){
-            val user = User(id = 0L, fullName, username, password)
-            mUserViewModel.addUser(user)
-            Toast.makeText(requireContext(), "naiyadded", Toast.LENGTH_LONG).show()
-            findNavController().navigate(R.id.action_addFragment_to_listFragment)
-        }else{
-            Toast.makeText(requireContext(), "kargaam amin", Toast.LENGTH_LONG).show()
+        if (!inputCheck(username, fullName, password)) {
+            Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_LONG).show()
+            return
         }
+
+        if (editingUserId != -1L) {
+            val updatedUser = User(id = editingUserId, fullName = fullName, username = username, password = password)
+            mUserViewModel.updateUser(updatedUser)
+            Toast.makeText(requireContext(), "Updated", Toast.LENGTH_LONG).show()
+        } else {
+            val newUser = User(id = 0L, fullName = fullName, username = username, password = password)
+            mUserViewModel.addUser(newUser)
+            Toast.makeText(requireContext(), "Added", Toast.LENGTH_LONG).show()
+        }
+
+        findNavController().navigate(R.id.action_addFragment_to_listFragment)
     }
-    private fun inputCheck(UserName : String, FullName : String, Password : String): Boolean{
-        return !(TextUtils.isEmpty(FullName)) && !(TextUtils.isEmpty(UserName)) && !(TextUtils.isEmpty(Password))
+
+    private fun inputCheck(username: String, fullName: String, password: String): Boolean {
+        return !(TextUtils.isEmpty(fullName)) && !(TextUtils.isEmpty(username)) && !(TextUtils.isEmpty(password))
     }
 }

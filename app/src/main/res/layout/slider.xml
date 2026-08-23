@@ -52,6 +52,9 @@
             android:background="#E0E0E0" />
 
         <!-- Reserve Button (Visible when Available) -->
+
+        <!-- Already Reserved Indicator (Visible when Reserved) -->
+
         <Button
             android:id="@+id/btn_reserve"
             android:layout_width="match_parent"
@@ -60,7 +63,6 @@
             android:text="Reserve"
             android:textColor="#FFFFFF" />
 
-        <!-- Already Reserved Indicator (Visible when Reserved) -->
         <LinearLayout
             android:id="@+id/layout_already_reserved"
             android:layout_width="match_parent"
