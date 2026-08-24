@@ -72,18 +72,18 @@ class Slider(
     }
 
     fun setReservationState(isReserved: Boolean) {
+        // The Reserve button always stays visible/clickable - a building having a reservation
+        // right now doesn't mean every other time slot is taken too. The status line and the
+        // "already reserved" banner just tell you whether it's in use at this exact moment.
         if (isReserved) {
-            tvStatus.text = "Status: Reserved"
+            tvStatus.text = "Status: In Use Now"
             tvStatus.setTextColor(Color.parseColor("#F44336"))
-
-            btnReserve.visibility = View.GONE
             layoutAlreadyReserved.visibility = View.VISIBLE
         } else {
-            tvStatus.text = "Status: Available"
+            tvStatus.text = "Status: Available Now"
             tvStatus.setTextColor(Color.parseColor("#4CAF50"))
-
-            btnReserve.visibility = View.VISIBLE
             layoutAlreadyReserved.visibility = View.GONE
         }
+        btnReserve.visibility = View.VISIBLE
     }
 }
