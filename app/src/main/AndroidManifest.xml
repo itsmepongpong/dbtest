@@ -45,6 +45,21 @@
             android:exported="false"
             android:theme="@style/Theme.Dbtest" />
 
+        <activity
+            android:name=".Settings"
+            android:exported="false"
+            android:theme="@style/Theme.Dbtest" />
+
+        <activity
+            android:name=".ProfileInfo"
+            android:exported="false"
+            android:theme="@style/Theme.Dbtest" />
+
+        <activity
+            android:name=".EditProfile"
+            android:exported="false"
+            android:theme="@style/Theme.Dbtest" />
+
     </application>
 
 </manifest>

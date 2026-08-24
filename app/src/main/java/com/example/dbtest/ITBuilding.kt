@@ -1,12 +1,18 @@
 package com.example.dbtest
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.Context
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.Button
 import android.widget.RelativeLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlin.math.abs
 
 class ITBuilding : AppCompatActivity() {
 
@@ -25,7 +31,6 @@ class ITBuilding : AppCompatActivity() {
         R.id.btn_2b_block to "2B Building",
         R.id.btn_4_block to "Comp Lab",
         R.id.btn_3_block to "Internet Room",
-        R.id.btn_faculty_block to "Faculty Building"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +74,90 @@ class ITBuilding : AppCompatActivity() {
                 val intent = Intent(this, ReservationActivity::class.java)
                 intent.putExtra("BUILDING_NAME", buildingName)
                 startActivity(intent)
+            }
+        }
+
+        // Open Settings when the gear FAB is tapped, and make it draggable
+        setupDraggableSettingsButton()
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupDraggableSettingsButton() {
+        val fab = findViewById<FloatingActionButton>(R.id.floatingActionButton)
+
+        // Set the FAB's click behavior (opens Settings on a normal tap)
+        fab.setOnClickListener {
+            startActivity(Intent(this, Settings::class.java))
+        }
+
+        // Restore the last saved position once the view has been measured
+        fab.post {
+            val prefs = getSharedPreferences("fab_position", Context.MODE_PRIVATE)
+            if (prefs.contains("fab_x") && prefs.contains("fab_y")) {
+                fab.x = prefs.getFloat("fab_x", fab.x)
+                fab.y = prefs.getFloat("fab_y", fab.y)
+            }
+        }
+
+        val touchSlop = ViewConfiguration.get(this).scaledTouchSlop
+
+        var downRawX = 0f
+        var downRawY = 0f
+        var startX = 0f
+        var startY = 0f
+        var isDragging = false
+
+        fab.setOnTouchListener { view, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    downRawX = event.rawX
+                    downRawY = event.rawY
+                    startX = view.x
+                    startY = view.y
+                    isDragging = false
+                    true
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+                    val dx = event.rawX - downRawX
+                    val dy = event.rawY - downRawY
+
+
+                    if (!isDragging && (abs(dx) > touchSlop || abs(dy) > touchSlop)) {
+                        isDragging = true
+                    }
+
+                    if (isDragging) {
+                        val parent = view.parent as View
+                        var newX = startX + dx
+                        var newY = startY + dy
+
+                        // Keep the button fully inside its parent
+                        newX = newX.coerceIn(0f, (parent.width - view.width).toFloat())
+                        newY = newY.coerceIn(0f, (parent.height - view.height).toFloat())
+
+                        view.x = newX
+                        view.y = newY
+                    }
+                    true
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    if (isDragging) {
+                        // Save the new position for next time
+                        getSharedPreferences("fab_position", Context.MODE_PRIVATE)
+                            .edit()
+                            .putFloat("fab_x", view.x)
+                            .putFloat("fab_y", view.y)
+                            .apply()
+                    } else {
+                        // It was a tap, not a drag — trigger the click listener
+                        view.performClick()
+                    }
+                    true
+                }
+
+                else -> false
             }
         }
     }

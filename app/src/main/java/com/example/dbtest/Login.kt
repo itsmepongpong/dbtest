@@ -72,6 +72,9 @@ class LoginActivity : AppCompatActivity() {
                 if (user != null && user.password == password) {
                     Toast.makeText(this@LoginActivity, "Login Successful!", Toast.LENGTH_SHORT).show()
 
+                    // Remember who's logged in so Settings/Profile screens know whose data to load
+                    SessionManager.saveSession(this@LoginActivity, user.username)
+
                     if (user.isAdmin) {
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                     } else {
