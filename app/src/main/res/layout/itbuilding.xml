@@ -126,20 +126,20 @@
                 android:textSize="10sp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/floatingActionButton"
-                android:layout_width="395dp"
-                android:layout_height="537dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginBottom="24dp"
-                android:clickable="true"
-                android:contentDescription="@string/add_item"
-                android:focusable="true"
-                android:src="@drawable/settings_logo"
-                android:tint="@color/purple_500"
-                android:tintMode="add" />
-
         </RelativeLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="395dp"
+            android:layout_height="537dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:clickable="true"
+            android:contentDescription="@string/add_item"
+            android:focusable="true"
+            android:src="@drawable/settings_logo"
+            android:tint="@color/purple_500"
+            android:tintMode="add" />
 
     </RelativeLayout>
 

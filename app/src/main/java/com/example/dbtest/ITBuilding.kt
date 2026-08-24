@@ -1,12 +1,19 @@
 package com.example.dbtest
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.RelativeLayout
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.dbtest.data.UserDatabase
+import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.Locale
 
 class ITBuilding : AppCompatActivity() {
 
@@ -16,6 +23,15 @@ class ITBuilding : AppCompatActivity() {
     private lateinit var mapContent: RelativeLayout
     private lateinit var slider: Slider
     private var currentBuildingId: Int? = null
+
+    // Names of buildings that have a reservation covering THIS exact moment, loaded from the DB.
+    // A building can still be booked any number of times for other, non-overlapping time slots -
+    // this set only drives the "In Use Now" vs "Available Now" status indicator.
+    private val reservedBuildings = mutableSetOf<String>()
+
+    private val reservationDao by lazy {
+        UserDatabase.getDatabase(applicationContext).reservationDao()
+    }
 
     // This list matches the EXACT IDs from your itbuilding.xml
     private val buildings = listOf(
@@ -27,6 +43,19 @@ class ITBuilding : AppCompatActivity() {
         R.id.btn_3_block to "Internet Room",
         R.id.btn_faculty_block to "Faculty Building"
     )
+
+    // Launches ReservationActivity and reacts once it returns, instead of a bare startActivity
+    // that had no way to tell ITBuilding a reservation/cancel/done just happened.
+    private val reservationLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // Re-check from the DB rather than assuming - the change might have been a new
+            // booking for later today, a cancellation, or a "marked done", each of which
+            // affects the "right now" status differently.
+            refreshReservedBuildingsAndSlider()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,12 +84,13 @@ class ITBuilding : AppCompatActivity() {
                 currentBuildingId = id
                 zoomToBuilding(button)
 
-                // Open the slider (isReserved = false for now)
-                slider.open(label, isReserved = false)
+                // Use the real, up-to-date "in use right now" status instead of a hardcoded false.
+                slider.open(label, isReserved = reservedBuildings.contains(label))
             }
         }
 
-        // Handle the slider's reserve button click to open ReservationActivity
+        // Handle the slider's reserve button click to open ReservationActivity.
+        // Always allowed - even a building in use right now can be booked for a different time.
         slider.onReserveClick = {
             val buildingId = currentBuildingId
             if (buildingId != null) {
@@ -68,9 +98,50 @@ class ITBuilding : AppCompatActivity() {
 
                 val intent = Intent(this, ReservationActivity::class.java)
                 intent.putExtra("BUILDING_NAME", buildingName)
-                startActivity(intent)
+                reservationLauncher.launch(intent)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Reload every time this screen becomes visible - covers a brand new reservation,
+        // a cancellation, and a "marked as done" change, all in one place.
+        loadReservedBuildings()
+    }
+
+    private fun loadReservedBuildings() {
+        lifecycleScope.launch {
+            reservedBuildings.clear()
+            reservedBuildings.addAll(fetchBuildingsReservedRightNow())
+        }
+    }
+
+    private fun refreshReservedBuildingsAndSlider() {
+        lifecycleScope.launch {
+            reservedBuildings.clear()
+            reservedBuildings.addAll(fetchBuildingsReservedRightNow())
+
+            // If the slider is still open on a building, update its status immediately
+            // instead of waiting for the next time it's opened.
+            val currentLabel = buildings.find { it.first == currentBuildingId }?.second
+            if (currentLabel != null) {
+                slider.setReservationState(isReserved = reservedBuildings.contains(currentLabel))
+            }
+        }
+    }
+
+    private suspend fun fetchBuildingsReservedRightNow(): List<String> {
+        val now = Calendar.getInstance()
+        val today = String.format(
+            Locale.US, "%04d-%02d-%02d",
+            now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH)
+        )
+        val nowTime = String.format(
+            Locale.US, "%02d:%02d",
+            now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE)
+        )
+        return reservationDao.getBuildingsReservedRightNow(today, nowTime)
     }
 
     private fun zoomToBuilding(button: View) {
