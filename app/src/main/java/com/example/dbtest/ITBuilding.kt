@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.dbtest.data.UserDatabase
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Locale
@@ -100,6 +101,12 @@ class ITBuilding : AppCompatActivity() {
                 intent.putExtra("BUILDING_NAME", buildingName)
                 reservationLauncher.launch(intent)
             }
+        }
+
+        // The settings FAB (gear icon, bottom-right) had no click listener at all before -
+        // tapping it did nothing. Wire it up to open the Settings screen.
+        findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener {
+            startActivity(Intent(this, Settings::class.java))
         }
     }
 
