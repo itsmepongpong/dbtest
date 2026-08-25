@@ -1,5 +1,4 @@
 package com.example.dbtest
-
 import android.graphics.Color
 import android.view.View
 import android.widget.Button
@@ -10,7 +9,7 @@ class Slider(
     rootView: View,
     private val animDuration: Long = 300L
 ) {
-    // Use findViewById instead of View Binding
+
     private val panelView: View = rootView.findViewById(R.id.buildingPanel)
     private val scrimView: View = rootView.findViewById(R.id.scrim)
     private val panelTitle: TextView = rootView.findViewById(R.id.panelBuildingName)
@@ -72,9 +71,7 @@ class Slider(
     }
 
     fun setReservationState(isReserved: Boolean) {
-        // The Reserve button always stays visible/clickable - a building having a reservation
-        // right now doesn't mean every other time slot is taken too. The status line and the
-        // "already reserved" banner just tell you whether it's in use at this exact moment.
+
         if (isReserved) {
             tvStatus.text = "Status: In Use Now"
             tvStatus.setTextColor(Color.parseColor("#F44336"))

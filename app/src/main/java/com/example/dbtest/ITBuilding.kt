@@ -42,7 +42,6 @@ class ITBuilding : AppCompatActivity() {
         R.id.btn_2b_block to "2B Building",
         R.id.btn_4_block to "Comp Lab",
         R.id.btn_3_block to "Internet Room",
-        R.id.btn_faculty_block to "Faculty Building"
     )
 
     // Launches ReservationActivity and reacts once it returns, instead of a bare startActivity

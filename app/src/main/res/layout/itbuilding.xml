@@ -14,7 +14,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:text="I'm the fucking map"
             android:textColor="#000000"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -112,30 +111,13 @@
                 android:textStyle="bold" />
 
 
-            <Button
-                android:id="@+id/btn_faculty_block"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/btn_1b_block"
-                android:layout_alignParentBottom="true"
-                android:layout_marginEnd="-229dp"
-                android:layout_marginBottom="26dp"
-                android:background="@drawable/building"
-                android:text="Faculty"
-                android:textColor="@color/white"
-                android:textSize="10sp"
-                android:textStyle="bold" />
-
         </RelativeLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="166dp"
             android:clickable="true"
             android:contentDescription="Settings"
             android:focusable="true"
